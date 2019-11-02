@@ -1,0 +1,15 @@
+When you get the board, please kindly program by yourself 
+You can connect the board with  CP2102
+
+RESET - RTS
+TXD - RX
+RXD - TX
+PROGRAM - CTS
+GND - GND
+
+IOS APP: The "DIYMall Relay Control" app in the App Store and Play Store are able to control the relays both over Wi-Fi and Bluetooth
+Android APP: https://play.google.com/store/apps/details?id=me.stratux.relaycontrol
+
+Any question please contact sales@diymalls.com
+skype freezone992
+whatsapp 0086-18576406709

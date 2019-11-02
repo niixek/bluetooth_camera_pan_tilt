@@ -1,0 +1,7 @@
+here's the firmware: https://github.com/cyoung/esp32-webserver
+
+
+If you wants client mode, please change these lines
+https://github.com/cyoung/esp32-webserver/blob/master/main/main.c#L315
+
+https://github.com/cyoung/esp32-webserver/blob/master/main/main.c#L113-L114

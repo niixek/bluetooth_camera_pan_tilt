@@ -1,0 +1,89 @@
+--- bluez-utils-3.9/hidd/main.c.orig	2007-01-28 21:16:47.000000000 +0100
++++ bluez-utils-3.9/hidd/main.c	2007-10-15 02:29:37.000000000 +0200
+@@ -87,15 +87,15 @@
+ 
+ 	if (bind(sk, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+ 		close(sk);
+ 		return -1;
+ 	}
+ 
+ 	memset(&opts, 0, sizeof(opts));
+-	opts.imtu = HIDP_DEFAULT_MTU;
++	opts.imtu = 64;
+ 	opts.omtu = HIDP_DEFAULT_MTU;
+ 	opts.flush_to = 0xffff;
+ 
+ 	setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts));
+ 
+ 	memset(&addr, 0, sizeof(addr));
+ 	addr.l2_family  = AF_BLUETOOTH;
+@@ -128,15 +128,15 @@
+ 		close(sk);
+ 		return -1;
+ 	}
+ 
+ 	setsockopt(sk, SOL_L2CAP, L2CAP_LM, &lm, sizeof(lm));
+ 
+ 	memset(&opts, 0, sizeof(opts));
+-	opts.imtu = HIDP_DEFAULT_MTU;
++	opts.imtu = 64;
+ 	opts.omtu = HIDP_DEFAULT_MTU;
+ 	opts.flush_to = 0xffff;
+ 
+ 	setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts));
+ 
+ 	if (listen(sk, backlog) < 0) {
+ 		close(sk);
+@@ -232,14 +232,34 @@
+ 
+ 	free(cr);
+ 	hci_close_dev(dd);
+ 
+ 	return err;
+ }
+ 
++static void enable_sixaxis(int csk) {
++	static const unsigned char msg[] = {
++		0x53 /*HIDP_TRANS_SET_REPORT | HIDP_DATA_RTYPE_FEATURE*/,
++		0xf4,  0x42, 0x03, 0x00, 0x00
++	};
++	write(csk, msg, sizeof(msg));
++
++	/* Wait for ack from device to ensure compliance with HIDP 7.9.1
++	 * (only one outstanding request on the control channel). */
++	struct pollfd p = { .fd=csk, .events=POLLIN, .revents=0 };
++	struct timespec t = { .tv_sec=1, .tv_nsec=0 };
++	unsigned char result;
++	if ( ppoll(&p, 1, &t, NULL) != 1 ||
++	     ! (p.revents & POLLIN) ||
++	     read(csk, &result, 1) != 1 ||
++	     result != 0 )
++	  syslog(LOG_WARNING, "Failed to enable sixaxis");
++  
++}
++
+ static int create_device(int ctl, int csk, int isk, uint8_t subclass, int nosdp, int nocheck, int bootonly, int encrypt, int timeout)
+ {
+ 	struct hidp_connadd_req req;
+ 	struct sockaddr_l2 addr;
+ 	socklen_t addrlen;
+ 	bdaddr_t src, dst;
+ 	char bda[18];
+@@ -320,14 +340,17 @@
+ 	}
+ 
+ 	if (bootonly) {
+ 		req.rd_size = 0;
+ 		req.flags |= (1 << HIDP_BOOT_PROTOCOL_MODE);
+ 	}
+ 
++	if ( req.vendor==0x054C && req.product==0x0268 )
++		enable_sixaxis(csk);
++
+ 	err = ioctl(ctl, HIDPCONNADD, &req);
+ 
+ error:
+ 	if (req.rd_data)
+ 		free(req.rd_data);
+ 
+ 	return err;
