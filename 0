@@ -1,0 +1,25 @@
+--2018-05-12 04:28:17--  http://joyborg.py/
+Resolving joyborg.py (joyborg.py)... 92.242.140.21
+Connecting to joyborg.py (joyborg.py)|92.242.140.21|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html’
+
+     0K                                                        14.2M=0s
+
+2018-05-12 04:28:17 (14.2 MB/s) - ‘index.html’ saved [868]
+
+--2018-05-12 04:28:17--  https://www.piborg.org/downloads/JoyBorg.txt
+Resolving www.piborg.org (www.piborg.org)... 134.213.151.228
+Connecting to www.piborg.org (www.piborg.org)|134.213.151.228|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 4678 (4.6K) [text/plain]
+Saving to: ‘JoyBorg.txt’
+
+     0K ....                                                  100% 10.9M=0s
+
+2018-05-12 04:28:17 (10.9 MB/s) - ‘JoyBorg.txt’ saved [4678/4678]
+
+FINISHED --2018-05-12 04:28:17--
+Total wall clock time: 0.7s
+Downloaded: 2 files, 5.4K in 0s (11.3 MB/s)
